@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  
+  <title>নেকি পাতা | প্রতিদিনের জিকির ও নেকি গণনার সহজ অ্যাপ</title>
+  <meta name="description" content="নেকি.পাতা.বাংলা - আপনার প্রতিদিনের জিকির, তসবিহ এবং নেকি গণনার একটি সুন্দর ও সহজ ইসলামিক অ্যাপ। ডাটাবেস ছাড়াই আপনার নেকি সংরক্ষণ করুন।">
+  <meta name="keywords" content="জিকির, নেকি, বাংলা ইসলামিক অ্যাপ, তসবিহ, tasbeeh, zikr, bangla islamic app, neki pata, নেকি পাতা বাংলা">
+  <meta name="robots" content="index, follow">
+  <meta name="author" content="নেকি.পাতা.বাংলা">
+  
+  <meta property="og:title" content="নেকি পাতা | জিকির ও তসবিহ">
+  <meta property="og:description" content="প্রতিদিনের জিকির করুন এবং নেকি অর্জন করুন।">
+  <meta property="og:type" content="website">
+
+  <link href="https://fonts.googleapis.com/css2?family=Anek+Bangla:wght@400;600;700;800&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --bg: #ecfdf5; /* Soft Mint Green */
+      --app-bg: #ffffff;
+      --primary: #059669; /* Islamic Emerald Green */
+      --primary-light: #10b981;
+      --text-main: #1f2937;
+      --text-muted: #6b7280;
+      --border: #e5e7eb;
+      --gold: #f59e0b;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Anek Bangla', sans-serif; user-select: none; }
+
+    body {
+      background-color: var(--bg);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      color: var(--text-main);
+    }
+
+    /* Mobile App Container */
+    .app-container {
+      background-color: var(--app-bg);
+      width: 100%;
+      max-width: 420px;
+      height: 100vh;
+      max-height: 850px;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    @media (min-width: 421px) {
+      .app-container { height: 90vh; border-radius: 30px; border: 8px solid #fff; }
+    }
+
+    /* Top Bar */
+    .top-bar {
+      padding: 1.5rem 1.5rem 1rem;
+      text-align: center;
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      color: white;
+      border-bottom-left-radius: 24px;
+      border-bottom-right-radius: 24px;
+      box-shadow: 0 4px 20px rgba(5, 150, 105, 0.3);
+      z-index: 10;
+    }
+
+    .top-bar h1 { font-size: 1.6rem; font-weight: 800; letter-spacing: 0.5px; }
+    .total-neki-badge {
+      display: inline-block;
+      background: rgba(255,255,255,0.2);
+      padding: 5px 15px;
+      border-radius: 50px;
+      margin-top: 10px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      border: 1px solid rgba(255,255,255,0.3);
+    }
+
+    /* Views container */
+    .view-area {
+      flex: 1;
+      overflow-y: auto;
+      position: relative;
+      padding-bottom: 80px; /* space for bottom nav */
+    }
+
+    .view { display: none; padding: 1.5rem; animation: fadeIn 0.3s ease; }
+    .view.active { display: block; }
+
+    /* --- HOME / TASBEEH VIEW --- */
+    .zikr-header { text-align: center; margin-bottom: 2rem; }
+    .zikr-title { font-size: 2.2rem; font-weight: 800; color: var(--primary); line-height: 1.2; }
+    .zikr-meaning { font-size: 1rem; color: var(--text-muted); margin-top: 5px; }
+    
+    .tap-area-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-top: 2rem;
+    }
+
+    .tap-circle {
+      width: 260px;
+      height: 260px;
+      background: linear-gradient(145deg, #ffffff, #e6e6e6);
+      border-radius: 50%;
+      box-shadow: 20px 20px 60px #d9d9d9, -20px -20px 60px #ffffff;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      border: 8px solid var(--bg);
+      transition: transform 0.1s;
+    }
+
+    .tap-circle:active {
+      transform: scale(0.95);
+      box-shadow: inset 10px 10px 30px #d9d9d9, inset -10px -10px 30px #ffffff;
+    }
+
+    .count-display { font-size: 4rem; font-weight: 800; color: var(--primary); line-height: 1; }
+    .neki-info { font-size: 0.9rem; color: var(--gold); font-weight: 700; margin-top: 10px; }
+
+    .reset-btn {
+      display: block;
+      margin: 2rem auto 0;
+      background: #fee2e2;
+      color: #ef4444;
+      border: none;
+      padding: 10px 25px;
+      border-radius: 50px;
+      font-size: 0.9rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    /* --- LIST VIEW --- */
+    .list-title { font-size: 1.2rem; font-weight: 700; margin-bottom: 1rem; color: var(--text-main); }
+    
+    .zikr-card {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 15px;
+      margin-bottom: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.02);
+      transition: all 0.2s;
+    }
+    
+    .zikr-card:active { transform: scale(0.98); border-color: var(--primary); }
+    .zikr-card.active-card { border: 2px solid var(--primary); background: var(--bg); }
+    
+    .card-name { font-size: 1.3rem; font-weight: 700; color: var(--text-main); }
+    .card-neki { font-size: 0.85rem; color: var(--primary); font-weight: 600; background: #d1fae5; padding: 2px 8px; border-radius: 8px; }
+
+    /* --- STATS VIEW --- */
+    .stats-card {
+      background: linear-gradient(135deg, var(--gold), #d97706);
+      color: white;
+      padding: 2rem;
+      border-radius: 20px;
+      text-align: center;
+      margin-bottom: 2rem;
+      box-shadow: 0 10px 20px rgba(245, 158, 11, 0.3);
+    }
+    
+    .stats-card h3 { font-size: 1rem; opacity: 0.9; margin-bottom: 5px; }
+    .stats-card .huge-number { font-size: 3.5rem; font-weight: 800; line-height: 1; }
+
+    .visitor-section { text-align: center; margin-top: 3rem; padding: 2rem; background: var(--bg); border-radius: 16px; }
+    .visitor-section p { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 10px; font-weight: 600; }
+    .visitor-section img { border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+
+    /* Bottom Navigation */
+    .bottom-nav {
+      position: absolute;
+      bottom: 0; left: 0; width: 100%;
+      background: white;
+      display: flex;
+      justify-content: space-around;
+      padding: 15px 10px 20px;
+      border-top: 1px solid var(--border);
+      box-shadow: 0 -10px 20px rgba(0,0,0,0.03);
+      z-index: 10;
+    }
+
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.85rem;
+      transition: color 0.2s;
+    }
+
+    .nav-item svg { width: 24px; height: 24px; margin-bottom: 4px; fill: currentColor; }
+    .nav-item.active { color: var(--primary); }
+
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+  </style>
+</head>
+<body>
+
+  <div class="app-container">
+    
+    <div class="top-bar">
+      <h1>নেকি.পাতা.বাংলা</h1>
+      <div class="total-neki-badge">মোট নেকি: <span id="header-total-neki">0</span></div>
+    </div>
+
+    <div class="view-area">
+      
+      <div class="view active" id="view-home">
+        <div class="zikr-header">
+          <div class="zikr-title" id="display-title">সুবহানাল্লাহ</div>
+          <div class="zikr-meaning" id="display-meaning">আল্লাহ পবিত্র ও মহিমান্বিত</div>
+        </div>
+
+        <div class="tap-area-container">
+          <div class="tap-circle" id="tap-btn">
+            <div class="count-display" id="display-count">0</div>
+            <div class="neki-info">+<span id="display-neki-val">10</span> নেকি</div>
+          </div>
+        </div>
+
+        <button class="reset-btn" onclick="resetCurrentCount()">রিসেট করুন</button>
+      </div>
+
+      <div class="view" id="view-list">
+        <div class="list-title">জিকির নির্বাচন করুন</div>
+        <div id="list-container">
+          </div>
+      </div>
+
+      <div class="view" id="view-stats">
+        <div class="stats-card">
+          <h3>আপনার অর্জিত সর্বমোট নেকি</h3>
+          <div class="huge-number" id="stats-total-neki">0</div>
+        </div>
+
+        <div class="visitor-section">
+          <p>এই ওয়েবসাইটে মোট ভিজিটর</p>
+          <img src="https://api.visitorbadge.io/api/visitors?path=neki.pata.bangla&label=Visitors&countColor=%23059669&labelStyle=upper" alt="Visitor Count">
+        </div>
+      </div>
+
+    </div>
+
+    <div class="bottom-nav">
+      <div class="nav-item active" onclick="switchTab('home', this)">
+        <svg viewBox="0 0 24 24"><path d="M12 2L2 12h3v8h6v-6h2v6h6v-8h3L12 2z"/></svg>
+        তসবিহ
+      </div>
+      <div class="nav-item" onclick="switchTab('list', this)">
+        <svg viewBox="0 0 24 24"><path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"/></svg>
+        আরও
+      </div>
+      <div class="nav-item" onclick="switchTab('stats', this)">
+        <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+        আমলনামা
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    // --- Data Base (The Options) ---
+    const zikrOptions = [
+      { id: 'subhanallah', title: 'সুবহানাল্লাহ', meaning: 'আল্লাহ পবিত্র ও মহিমান্বিত', neki: 10 },
+      { id: 'alhamdulillah', title: 'আলহামদুলিল্লাহ', meaning: 'যাবতীয় প্রশংসা আল্লাহর', neki: 10 },
+      { id: 'allahu_akbar', title: 'আল্লাহু আকবার', meaning: 'আল্লাহ সর্বশ্রেষ্ঠ', neki: 10 },
+      { id: 'astaghfirullah', title: 'আস্তাগফিরুল্লাহ', meaning: 'আমি আল্লাহর কাছে ক্ষমা চাই', neki: 10 },
+      { id: 'la_ilaha', title: 'লা ইলাহা ইল্লাল্লাহ', meaning: 'আল্লাহ ছাড়া কোনো উপাস্য নেই', neki: 20 },
+      { id: 'durood', title: 'দরূদ শরীফ', meaning: 'সাল্লাল্লাহু আলাইহি ওয়াসাল্লাম', neki: 100 },
+      { id: 'surah_ikhlas', title: 'সূরা ইখলাস', meaning: 'কুরআনের এক-তৃতীয়াংশ তিলাওয়াতের সওয়াব', neki: 400 }
+    ];
+
+    // --- State Variables ---
+    let currentZikrIndex = 0;
+    
+    // Load from LocalStorage (No Database magic)
+    let appData = JSON.parse(localStorage.getItem('nekiAppDB')) || {
+      totalNeki: 0,
+      counts: {} // Stores count per zikr id
+    };
+
+    // --- DOM Elements ---
+    const tapBtn = document.getElementById('tap-btn');
+    const dispCount = document.getElementById('display-count');
+    const dispTitle = document.getElementById('display-title');
+    const dispMeaning = document.getElementById('display-meaning');
+    const dispNekiVal = document.getElementById('display-neki-val');
+    
+    const headerTotal = document.getElementById('header-total-neki');
+    const statsTotal = document.getElementById('stats-total-neki');
+    const listContainer = document.getElementById('list-container');
+
+    // --- Core Functions ---
+
+    // Initialize the app
+    function init() {
+      updateZikrUI();
+      updateTotalNekiUI();
+      buildZikrList();
+    }
+
+    // Tap to Count
+    tapBtn.addEventListener('click', function() {
+      // Haptic Feedback for mobile (vibrates for 50ms)
+      if (navigator.vibrate) {
+        navigator.vibrate(40);
+      }
+
+      const zikr = zikrOptions[currentZikrIndex];
+      
+      // Update specific count
+      if (!appData.counts[zikr.id]) appData.counts[zikr.id] = 0;
+      appData.counts[zikr.id]++;
+      
+      // Update total Neki
+      appData.totalNeki += zikr.neki;
+
+      saveData();
+      updateZikrUI();
+      updateTotalNekiUI();
+    });
+
+    function resetCurrentCount() {
+      const zikr = zikrOptions[currentZikrIndex];
+      if(confirm('আপনি কি এই জিকিরের সংখ্যা শূন্য করতে চান? (আপনার অর্জিত মোট নেকি কাটা যাবে না)')) {
+        appData.counts[zikr.id] = 0;
+        saveData();
+        updateZikrUI();
+      }
+    }
+
+    // Update screen
+    function updateZikrUI() {
+      const zikr = zikrOptions[currentZikrIndex];
+      const currentCount = appData.counts[zikr.id] || 0;
+      
+      dispTitle.innerText = zikr.title;
+      dispMeaning.innerText = zikr.meaning;
+      dispNekiVal.innerText = zikr.neki;
+      dispCount.innerText = currentCount;
+    }
+
+    function updateTotalNekiUI() {
+      headerTotal.innerText = appData.totalNeki.toLocaleString('bn-BD');
+      statsTotal.innerText = appData.totalNeki.toLocaleString('bn-BD');
+    }
+
+    function saveData() {
+      localStorage.setItem('nekiAppDB', JSON.stringify(appData));
+    }
+
+    // --- List View Builder ---
+    function buildZikrList() {
+      listContainer.innerHTML = '';
+      zikrOptions.forEach((zikr, index) => {
+        const div = document.createElement('div');
+        div.className = `zikr-card ${index === currentZikrIndex ? 'active-card' : ''}`;
+        div.onclick = () => selectZikr(index);
+        
+        div.innerHTML = `
+          <div>
+            <div class="card-name">${zikr.title}</div>
+            <div class="zikr-meaning" style="font-size: 0.8rem; margin-top: 2px;">${zikr.meaning}</div>
+          </div>
+          <div class="card-neki">+${zikr.neki} নেকি</div>
+        `;
+        listContainer.appendChild(div);
+      });
+    }
+
+    function selectZikr(index) {
+      currentZikrIndex = index;
+      updateZikrUI();
+      buildZikrList(); // refresh active state
+      // Auto switch to home tab
+      document.querySelector('.bottom-nav .nav-item').click(); 
+    }
+
+    // --- Tab Navigation ---
+    window.switchTab = function(tabName, element) {
+      // Hide all views
+      document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+      // Remove active from nav items
+      document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+      
+      // Show target view
+      document.getElementById('view-' + tabName).classList.add('active');
+      element.classList.add('active');
+    };
+
+    // Run app
+    init();
+  </script>
+</body>
+</html>
